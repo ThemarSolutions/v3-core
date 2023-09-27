@@ -22,7 +22,13 @@ library TickMath {
     /// at the given tick
     function getSqrtRatioAtTick(int24 tick) internal pure returns (uint160 sqrtPriceX96) {
         uint256 absTick = tick < 0 ? uint256(-int256(tick)) : uint256(int256(tick));
-        require(absTick <= uint256(MAX_TICK), 'T');
+        int256 absTickInt256 = int256(absTick);
+        if (maxTickInt256 >= 0) {
+            require(absTick <= uint256(maxTickInt256), 'T');
+        } else {
+            revert('T');
+        }
+
 
         uint256 ratio = absTick & 0x1 != 0 ? 0xfffcb933bd6fad37aa2d162d1a594001 : 0x100000000000000000000000000000000;
         if (absTick & 0x2 != 0) ratio = (ratio * 0xfff97272373d413259a46990580e213a) >> 128;
